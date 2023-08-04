@@ -7,11 +7,12 @@ class Person:
     A class representing a Person
     """
     
-    def __init__(self, first_name:str, last_name:str, birthdate:str, gender:Gender, address:str):
+    def __init__(self, id:str, first_name:str, last_name:str, birthdate:str, gender:Gender, address:str):
         """
         Initialize a Person instance.
 
         Args:
+            id (str): The person id
             first_name (str): The first name of the person.
             last_name (str): The last name of the person.
             birthdate (str): The birthdate of the person in 'YYYY-MM-DD' format.
@@ -24,6 +25,7 @@ class Person:
             raise ValueError()
         
         self.general_data = {
+            "id": id,
             "first_name": first_name,
             "last_name": last_name,
             "birthdate": birthdate,

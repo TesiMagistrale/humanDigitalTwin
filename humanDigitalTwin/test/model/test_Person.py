@@ -4,6 +4,7 @@ from domain.model.Gender import Gender
 from domain.model.SensorStatus import SensorStatus
 
 class TestFitnessToDrive:
+    id = "srgnju679m"
     first_name = "Mario"
     last_name = "Rossi"
     birthdate = "2000-09-10"
@@ -11,7 +12,8 @@ class TestFitnessToDrive:
     address = "via rosa, 1"
     
     def test_person_general_data(self):
-        p = Person(self.first_name, 
+        p = Person(self.id,
+                   self.first_name, 
                    self.last_name, 
                    self.birthdate, 
                    self.gender, 
@@ -19,6 +21,7 @@ class TestFitnessToDrive:
                    )
         
         expected = {
+            "id": self.id,
             "first_name": self.first_name,
             "last_name": self.last_name,
             "birthdate": self.birthdate,
@@ -37,12 +40,13 @@ class TestFitnessToDrive:
         assert p.get_general_data() == expected
         
     def test_person_active_state(self):
-        p = Person(self.first_name, 
-                   self.last_name, 
-                   self.birthdate, 
-                   self.gender, 
-                   self.address
-                   )
+        p = Person(self.id,
+            self.first_name, 
+            self.last_name, 
+            self.birthdate, 
+            self.gender, 
+            self.address
+            )
         
         expected = dict()
         
@@ -63,12 +67,13 @@ class TestFitnessToDrive:
         assert p.get_actual_state() == expected
         
     def test_person_sensors(self):
-        p = Person(self.first_name, 
-                   self.last_name, 
-                   self.birthdate, 
-                   self.gender, 
-                   self.address
-                   )
+        p = Person(self.id,
+            self.first_name, 
+            self.last_name, 
+            self.birthdate, 
+            self.gender, 
+            self.address
+            )
         
         expected = dict()
         
