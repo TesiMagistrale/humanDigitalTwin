@@ -1,5 +1,5 @@
 from domain.model.Person import Person
-
+from domain.ports.StereotypePort import StereotypePort
 
 class PersonService:
     
@@ -13,9 +13,12 @@ class PersonService:
         
     
         
-    """ def compute_data(self, stereotype_name, data):
+    async def compute_data(self, stereotype_name, data):
         if stereotype_name in self.stereotypes:
-            self.stereotypes[stereotype_name].compute_data(data) """
+            s:StereotypePort = self.stereotypes[stereotype_name]
+            return await s.compute_data(data)
+        else:
+            raise ValueError("Wrong stereotype name")
         
     
     

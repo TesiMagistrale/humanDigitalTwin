@@ -8,7 +8,3 @@ class StereotypePort(ABC):
     @abstractmethod
     def compute_data(self, data):
         pass
-    
-    @abstractmethod
-    def start(self):
-        pass
