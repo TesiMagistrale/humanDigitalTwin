@@ -2,7 +2,7 @@ import asyncio
 from domain.model.PersonService import PersonService 
 from domain.model.Person import Person
 from domain.model.Gender import Gender
-from adapters.stereotypes.FtDStereotypeModule import FtDStereotypeModule 
+from adapters.stereotypes.ftd.sub_domain.model.FtDStereotypeModule import FtDStereotypeModule 
 
 id = "srgnju679m"
 first_name = "Mario"
