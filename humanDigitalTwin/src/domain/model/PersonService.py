@@ -1,5 +1,4 @@
 from domain.model.Person import Person
-from domain.ports.StereotypePort import StereotypePort
 from domain.model import SensorStatus
 
 class PersonService:
@@ -16,7 +15,7 @@ class PersonService:
         
     async def compute_data(self, stereotype_name, data):
         if stereotype_name in self.stereotypes:
-            s:StereotypePort = self.stereotypes[stereotype_name]
+            s = self.stereotypes[stereotype_name]
             return await s.compute_data(data)
         else:
             raise ValueError("Wrong stereotype name")

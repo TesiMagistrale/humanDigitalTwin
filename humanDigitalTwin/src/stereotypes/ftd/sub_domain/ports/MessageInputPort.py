@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
-class FitnessToDriveCalculatorPort(ABC):
+class MessageInputPort(ABC):
     
     @abstractmethod
-    def compute_ftd(self):
+    def receive(self, data):
         pass

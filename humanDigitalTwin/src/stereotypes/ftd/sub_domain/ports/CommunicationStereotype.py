@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-class MQTTPort(ABC):
+class CommunicationStereotype(ABC):
     
     @abstractmethod
     def setup(self):
