@@ -1,0 +1,6 @@
+{
+    "broker_name": "broker.hivemq.com",
+    "input_topic": "newFtD",
+    "output_topic": "ftdMS",
+    "port": 1883
+}
