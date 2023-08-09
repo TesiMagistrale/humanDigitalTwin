@@ -50,13 +50,10 @@ class RabbitMqClientAdapter(CommunicationStereotype):
         
     async def start(self):
         from stereotypes.ftd.adapters.rabbit_mq.RabbitMqInputAdapter import RabbitMqInputAdapter
-        await asyncio.create_task(RabbitMqInputAdapter.create(self))
+        tasks = [RabbitMqInputAdapter.create(self, queue) for queue in self.queues]
+        await asyncio.gather(*tasks)
 
-        await self._cleanup()
-
-    async def _cleanup(self):
-        if self.connection:
-            await self.connection.close()
 
     async def stop(self):
         await self.channel.close()
+        print("rabbit client stopped")

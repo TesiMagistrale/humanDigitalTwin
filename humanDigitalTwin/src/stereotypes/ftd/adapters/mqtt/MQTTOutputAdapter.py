@@ -22,4 +22,4 @@ class MQTTOutputAdapter(MessageOutputPort):
         "out_topic": "topicP1"}
         '''
         data["out_topic"] = self.receiver_topic
-        await self.base_client.client.publish(self.out_topic , json.dumps(data, default=str))
+        await self.base_client.client.publish(self.out_topic , json.dumps(data, default=str).encode("utf-8"))

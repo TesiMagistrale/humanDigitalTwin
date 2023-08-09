@@ -13,22 +13,22 @@ class RabbitMqInputAdapter(MessageInputPort):
         pass
     
     @classmethod
-    async def create(cls, base_client:RabbitMqClientAdapter):
+    async def create(cls, base_client:RabbitMqClientAdapter, queue):
         instance = cls()
-        await instance._setup(base_client)
+        await instance._setup(base_client, queue)
         
-    async def _setup(self, base_client):
+    async def _setup(self, base_client, queue):
         self.base_client = base_client
+        self.queue = queue
         try:
-            for queue in self.base_client.queues:
-                async with queue.iterator() as queue_iter:
-                    async for message in queue_iter:
-                        async with message.process():
-                            data = {
-                                "queue": message.routing_key,
-                                "msg": json.loads(message.body.decode("utf-8"))
-                            }
-                            await self.receive(data)
+            async with self.queue.iterator() as queue_iter:
+                async for message in queue_iter:
+                    async with message.process():
+                        data = {
+                            "queue": message.routing_key,
+                            "msg": json.loads(message.body.decode("utf-8"))
+                        }
+                        await self.receive(data)
         except Exception as e:
             print(e)
     

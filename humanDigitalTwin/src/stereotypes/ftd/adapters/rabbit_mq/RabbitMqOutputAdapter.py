@@ -11,7 +11,6 @@ class RabbitMqOutputAdapter(MessageOutputPort):
         self.routing_key = routing_key
     
     async def send(self, data):
-        print(data) #TODO remove
         try:
             await self.base_client.exchange.publish(
                 message=Message(json.dumps(data, default=str).encode("utf-8")),
