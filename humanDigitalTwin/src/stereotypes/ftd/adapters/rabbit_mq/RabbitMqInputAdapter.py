@@ -1,4 +1,7 @@
+import asyncio
 import json
+
+import aio_pika
 from stereotypes.ftd.adapters.rabbit_mq.RabbitMqClientAdapter import RabbitMqClientAdapter
 from stereotypes.ftd.sub_domain.ports.MessageInputPort import MessageInputPort
 from stereotypes.ftd.sub_domain.model.FtDParameters import FtDParameters
@@ -6,22 +9,30 @@ from stereotypes.ftd.sub_domain.model.FtDParameters import FtDParameters
 class RabbitMqInputAdapter(MessageInputPort):
 
     
-    def __init__(self, base_client:RabbitMqClientAdapter):
+    def __init__(self):
+        pass
+    
+    @classmethod
+    async def create(cls, base_client:RabbitMqClientAdapter):
+        instance = cls()
+        await instance._setup(base_client)
+        
+    async def _setup(self, base_client):
         self.base_client = base_client
-        for queue_name  in self.base_client.queues:
-            self.base_client.channel.basic_consume(
-                queue=queue_name, 
-                on_message_callback=self._on_message, 
-                auto_ack=True)
+        try:
+            for queue in self.base_client.queues:
+                async with queue.iterator() as queue_iter:
+                    async for message in queue_iter:
+                        async with message.process():
+                            data = {
+                                "queue": message.routing_key,
+                                "msg": json.loads(message.body.decode("utf-8"))
+                            }
+                            await self.receive(data)
+        except Exception as e:
+            print(e)
     
-    def _on_message(self, ch, method, properties, body):
-        data = {
-            "queue": method.routing_key,
-            "msg" : json.loads(body.decode("utf-8"))
-        }
-        self.receive(data)
-    
-    def receive(self, data):
+    async def receive(self, data):
         queue = data["queue"]
         msg = data["msg"]
         sensor_value = {}
@@ -46,6 +57,6 @@ class RabbitMqInputAdapter(MessageInputPort):
                 case _:
                     raise ValueError("wrong topic")
             sensor_value["type"] =  FtDParameters.get_full_name_from_topic(queue)
-            self.base_client.service.compute_data(sensor_value)
+            await self.base_client.service.compute_data(sensor_value)
         except ValueError as e:
             print(f"exception: {e}")

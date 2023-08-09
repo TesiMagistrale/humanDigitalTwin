@@ -10,11 +10,11 @@ class CommunicationStereotype(ABC):
         pass
     
     @abstractmethod
-    def connect(self):
+    async def connect(self):
         pass
     
     @abstractmethod
-    def stop(self):
+    async def stop(self):
         pass
     
     @abstractmethod

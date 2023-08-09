@@ -25,7 +25,7 @@ class FtDStereotypeModule(StereotypePort):
         self._reset_variables()
     
     
-    def compute_data(self, data):
+    async def compute_data(self, data):
         '''
         TODO: devo gestire i buffer e al momento del calcolo inviare un messaggio al servizio FTD, ottenuto il dato lo ritorno al servizio che lo ritorna all'adapter mqtt e che lo invierà poi alla macchina
         per i km annui salva ogni giorno sul db (ad ogni guida aggiorni il valore del giorno se presente, altrimenti lo crei nuovo con il dato), al momento dell'avvio della guida reperisci il dato aggregato dal db e assegnalo alla variabile yearly_km il dato si riferisce ai km annui rilevati al giorno precedente.
@@ -76,13 +76,13 @@ class FtDStereotypeModule(StereotypePort):
                 raise ValueError("wrong sensor type")
             
         if self.compute_ftd_flag:
-            self._compute_ftd()
+            await self._compute_ftd()
         
         return  
     
-    def new_elaborated_data(self, data):
+    async def new_elaborated_data(self, data):
         self.person_service.update_actual_state("ftd", data["ftd"])
-        self.output_comm.send(data)
+        await self.output_comm.send(data)
         
 
     def start(self, data):
@@ -128,7 +128,7 @@ class FtDStereotypeModule(StereotypePort):
         licence_date = datetime.strptime(licence_date, '%Y-%m-%d')
         return today.year - licence_date.year - ((today.month, today.day) < (licence_date.month, licence_date.day))
     
-    def _compute_ftd(self):
+    async def _compute_ftd(self):
         age_weight = drive_age_weight(self.person_service.get_age())
         person_general_data = self.person_service.get_general_data()
         
@@ -164,7 +164,7 @@ class FtDStereotypeModule(StereotypePort):
             FtDParameters.DF.value: freq_and_exp_weight
         }
         
-        self.ftd_calculator.send(data)
+        await self.ftd_calculator.send(data)
         self.compute_ftd_flag = False
         
     def _add_module_state(self):

@@ -1,13 +1,14 @@
+import asyncio
 import json
 from typing import Dict
-import paho.mqtt.client as mqtt
+import aiomqtt as mqtt
 from stereotypes.ftd.sub_domain.ports.StereotypePort import StereotypePort
 from stereotypes.ftd.sub_domain.ports.CommunicationStereotype import CommunicationStereotype
 
 class MQTTClientAdapter(CommunicationStereotype):
     
     def __init__(self):
-        self.client = mqtt.Client()
+        pass
         
         
     def setup(self, config: Dict[str, str], service: StereotypePort):
@@ -15,19 +16,25 @@ class MQTTClientAdapter(CommunicationStereotype):
         self.topics = config["input_topic"]
         self.port = config["port"]
         self.service = service 
-        
-        self.client.on_connect = self._on_connect
+        self.client = mqtt.Client(self.broker_address, self.port)
         self.connected = False
         
 
-    def connect(self):
-        self.client.connect(self.broker_address, port=self.port)
+    async def connect(self):
+        await self.client.connect()
+        print("Connected to MQTT broker")
+        for topic in self.topics:
+            await self.client.subscribe(topic)
+        
+        self.connected = True
         
     async def start(self):
-        self.client.loop_start()
+        from stereotypes.ftd.adapters.mqtt.MQTTInputAdapter import MQTTInputAdapter
+        await asyncio.create_task(MQTTInputAdapter.create(self))
+
     
-    def stop(self):
-        self.client.loop_stop()
+    async def stop(self):
+        await self.client.disconnect()
         print("Client stopped")
 
     def start_service(self, data):
@@ -35,10 +42,4 @@ class MQTTClientAdapter(CommunicationStereotype):
 
     def stop_service(self, data):
         self.service.stop(data)
-
-    def _on_connect(self, client, userdata, flags, rc):
-        print("Connected to MQTT broker with result code "+str(rc))
-        for topic in self.topics:
-            self.client.subscribe(topic)
         
-        self.connected = True

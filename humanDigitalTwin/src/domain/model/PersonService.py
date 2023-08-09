@@ -1,24 +1,25 @@
 from domain.model.Person import Person
 from domain.model import SensorStatus
+from domain.model.MetaPersonService import MetaPersonService
+from domain.ports.StereotypeScript import StereotypeScript
 
-class PersonService:
+
+class PersonService(metaclass = MetaPersonService):
     
     def __init__(self, person: Person):
         self.person = person
         self.stereotypes = dict()
         
-        
-    def add_stereotype(self, stereotype_name, stereotype):
+    def add_stereotype(self, stereotype_name, stereotype: StereotypeScript):
         self.stereotypes[stereotype_name] = stereotype
         
     
-        
-    async def compute_data(self, stereotype_name, data):
+    """  async def compute_data(self, stereotype_name, data):
         if stereotype_name in self.stereotypes:
             s = self.stereotypes[stereotype_name]
             return await s.compute_data(data)
         else:
-            raise ValueError("Wrong stereotype name")
+            raise ValueError("Wrong stereotype name") """
         
         
     def get_general_data(self):

@@ -9,7 +9,7 @@ class MQTTOutputAdapter(MessageOutputPort):
         self.out_topic = out_topic
         self.receiver_topic = receiver_topic
     
-    def send(self, data):
+    async def send(self, data):
         '''
         message example:
         {"person_id": 1, 
@@ -22,4 +22,4 @@ class MQTTOutputAdapter(MessageOutputPort):
         "out_topic": "topicP1"}
         '''
         data["out_topic"] = self.receiver_topic
-        self.base_client.client.publish(self.out_topic , json.dumps(data, default=str))
+        await self.base_client.client.publish(self.out_topic , json.dumps(data, default=str))
