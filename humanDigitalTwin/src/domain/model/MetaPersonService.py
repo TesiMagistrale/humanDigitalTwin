@@ -1,2 +1,0 @@
-class MetaPersonService(type): 
-    pass

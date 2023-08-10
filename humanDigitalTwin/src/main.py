@@ -1,8 +1,8 @@
 import asyncio
+from typing import Type
 from domain.model.PersonService import PersonService 
 from domain.model.Person import Person
 from domain.model.Gender import Gender
-from domain.model.MetaPersonService import MetaPersonService
 from domain.ports.PersonServiceUseStereotypePort import PersonServiceNewStereotypePort
 
 id = "srgnju679m"
@@ -21,7 +21,7 @@ async def main():
                 gender, 
                 address
                 )
-    person_service: PersonServiceNewStereotypePort = PersonService(p)
+    person_service: Type[PersonService] = PersonService(p)
     person_service.add_general_data("licence_date", "2015-01-05")
 
     module_name = "ftd"
@@ -30,6 +30,9 @@ async def main():
     })
     
     stereotype = await person_service.get_stereotype(module_name)
+    
+    print(person_service.get_actual_state())
+    print(person_service.get_sensors())
     
     # each time that i connect to the vehicle i must do all of this
     
@@ -72,9 +75,16 @@ async def main():
         data = {
             "module": module_data_stop
         }
+        
+        print(person_service.get_actual_state())
+        print(person_service.get_sensors())
+        
         await stereotype.stop(data)
         event.set()
         await event.wait()
+        
+        print(person_service.get_actual_state())
+        print(person_service.get_sensors())
         
     except Exception or KeyboardInterrupt as e:
         print("Received KeyboardInterrupt, setting event...")

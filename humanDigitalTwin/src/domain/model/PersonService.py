@@ -1,12 +1,13 @@
 import importlib
 from domain.model.Person import Person
 from stereotypes.generic import SensorStatus
-from domain.model.MetaPersonService import MetaPersonService
 from stereotypes.generic.StereotypeScript import StereotypeScript
+from stereotypes.generic.PersonServicePort import PersonServicePort
 from domain.model.util import download_stereotype
+from domain.ports.PersonServiceUseStereotypePort import PersonServiceNewStereotypePort
 
 
-class PersonService(metaclass = MetaPersonService):
+class PersonService(PersonServiceNewStereotypePort, PersonServicePort):
     
     def __init__(self, person: Person):
         self.person = person

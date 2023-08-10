@@ -1,4 +1,5 @@
 import asyncio
+from stereotypes.generic.SensorStatus import SensorStatus
 from stereotypes.generic.PersonServicePort import PersonServicePort
 from stereotypes.generic.StereotypeScript import StereotypeScript
 from stereotypes.ftd.sub_domain.ports.CommunicationStereotype import CommunicationStereotype
@@ -16,7 +17,13 @@ from stereotypes.ftd.adapters.rabbit_mq.RabbitMqOutputAdapter import RabbitMqOut
 class Start(StereotypeScript):
     
     def __init__(self):
-        print("init")
+        self.sensors = [
+            "cognitive_distraction_camera",
+            "visual_distraction_camera",
+            "emotions_camera",
+            "car_speedometer",
+            "arousal_sensor"
+        ]
         pass
     
     def init(self, service: PersonServicePort):
@@ -34,6 +41,10 @@ class Start(StereotypeScript):
             self.mqtt_config["output_topic"],
             self. mqtt_config["input_topic"][0]
             )
+        
+        for sensor in self.sensors:
+            if sensor not in self.person_service.get_sensors().keys():
+                self.person_service.add_sensor(sensor_name=sensor, status=SensorStatus.OFF)
 
     
     
@@ -64,7 +75,8 @@ class Start(StereotypeScript):
             ftd_service:StereotypePort = FtDStereotypeModule(
                 self.person_service, 
                 self.mqtt_output, 
-                self.rabbitmq_output
+                self.rabbitmq_output,
+                self.sensors
                 )
             
             self.base_mqtt_client.setup(self.mqtt_config,

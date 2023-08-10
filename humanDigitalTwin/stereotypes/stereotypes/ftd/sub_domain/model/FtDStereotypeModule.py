@@ -1,5 +1,6 @@
 
 import numpy as np
+from stereotypes.generic.SensorStatus import SensorStatus
 from stereotypes.ftd.sub_domain.ports.MessageOutputPort import MessageOutputPort
 from stereotypes.ftd.sub_domain.ports.StereotypePort import StereotypePort
 from stereotypes.ftd.sub_domain.model.FtDParameters import FtDParameters
@@ -12,7 +13,7 @@ from stereotypes.generic.PersonServicePort import PersonServicePort
 
 class FtDStereotypeModule(StereotypePort):
     
-    def __init__(self, person_service:PersonServicePort, ftd_calculator: MessageOutputPort, output_comm: MessageOutputPort):
+    def __init__(self, person_service:PersonServicePort, ftd_calculator: MessageOutputPort, output_comm: MessageOutputPort, sensors):
         self.person_service = person_service
         self.ftd_calculator = ftd_calculator
         self.output_comm = output_comm
@@ -21,6 +22,8 @@ class FtDStereotypeModule(StereotypePort):
         self.start_drive_km = 0
         FtDParameters.E.full_namend_drive_km = 0
         self.yearly_km = 0
+        
+        self.sensors = sensors
         
         self._reset_variables()
     
@@ -33,7 +36,6 @@ class FtDStereotypeModule(StereotypePort):
         
         #update local variables
         sensor_type = data["type"]
-        #TODO update sensor_actual value
         match sensor_type:
             case FtDParameters.CD.full_name:
                 '''
@@ -43,6 +45,7 @@ class FtDStereotypeModule(StereotypePort):
                 }
                 '''
                 self.cognitive_distraction = data[FtDParameters.CD.full_name]
+                self.person_service.update_actual_state(FtDParameters.CD.full_name, data[FtDParameters.CD.full_name]["sensor_value"])
                 self.compute_ftd_flag = True
             case FtDParameters.VD.full_name:
                 '''
@@ -52,6 +55,7 @@ class FtDStereotypeModule(StereotypePort):
                 }
                 '''
                 self.visual_distraction = data[FtDParameters.VD.full_name]
+                self.person_service.update_actual_state(FtDParameters.VD.full_name, data[FtDParameters.VD.full_name]["sensor_value"])
             case FtDParameters.E.full_name:
                 '''
                 data[FtDParameters.E.full_name]= {"anger": 0.45699999999999996, "happiness": 0.01895, "fear": 0.0030499999999999998, "sadness": 0.00065, "neutral": 0.0024, "disgust": 0.013025, "surprise": 0.004925}
@@ -60,12 +64,14 @@ class FtDStereotypeModule(StereotypePort):
                     buffer = self.emotion_buffer[k]
                     buffer.pop()
                     buffer.append(float(v))
+                self.person_service.update_actual_state(FtDParameters.E.full_name, data[FtDParameters.E.full_name])
             case FtDParameters.A.full_name:
                 '''
-                data[FtDParameters.Afull_name]= 0.1
+                data[FtDParameters.A.full_name]= 0.1
                 '''
                 self.arousal_buffer.pop(0)
                 self.arousal_buffer.append(float(data[FtDParameters.A.full_name]))
+                self.person_service.update_actual_state(FtDParameters.A.full_name, data[FtDParameters.A.full_name])
             case FtDParameters.SPEED.full_name:
                 '''
                 data[FtDParameters.SPEED.full_name]= 100
@@ -90,14 +96,15 @@ class FtDStereotypeModule(StereotypePort):
         self.end_drive_km = 0
         #self.yearly_km = retrive from db from today date and today date - 1 year TODO
         self.yearly_km = 5000
-        self.person_service.add_actual_state("yearly_km", self.yearly_km)
         self._add_module_state()
         self._reset_variables()
+        self._set_sensors_state(SensorStatus.ON)
         
     def stop(self, data):
         self.end_drive_km = data["km"]
         #TODO save driven km self.service.save(data) ?? da elaborare 
         self._remove_module_state()
+        self._set_sensors_state(SensorStatus.OFF)
     
     def _reset_variables(self):
         self.emotion_buffer={
@@ -172,7 +179,7 @@ class FtDStereotypeModule(StereotypePort):
         self.person_service.add_actual_state(FtDParameters.VD.full_name, 0)
         self.person_service.add_actual_state(FtDParameters.E.full_name, {})
         self.person_service.add_actual_state(FtDParameters.A.full_name, 0)
-        self.person_service.add_actual_state("yearly_km", 0)
+        self.person_service.add_actual_state("yearly_km", self.yearly_km)
         self.person_service.add_actual_state("ftd", 1)
         
     def _remove_module_state(self):
@@ -183,7 +190,9 @@ class FtDStereotypeModule(StereotypePort):
         self.person_service.remove_state("yearly_km")
         self.person_service.remove_state("ftd")
         
-    #TODO add on off sensor
+    def _set_sensors_state(self, status: SensorStatus):
+        for sensor in self.sensors:
+            self.person_service.update_sensor_status(sensor_name=sensor, status=status)
         
     
 
