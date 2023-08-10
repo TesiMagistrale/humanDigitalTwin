@@ -1,23 +1,23 @@
 import asyncio
-from domain.ports.PersonServicePort import PersonServicePort
-from domain.ports.StereotypeScript import StereotypeScript
+from stereotypes.generic.PersonServicePort import PersonServicePort
+from stereotypes.generic.StereotypeScript import StereotypeScript
 from stereotypes.ftd.sub_domain.ports.CommunicationStereotype import CommunicationStereotype
-from stereotypes.ftd.sub_domain.ports.MessageInputPort import MessageInputPort
 from stereotypes.ftd.sub_domain.ports.MessageOutputPort import MessageOutputPort
 from stereotypes.ftd.sub_domain.ports.StereotypePort import StereotypePort
 
 from stereotypes.ftd.adapters.mqtt.MQTTClientAdapter import MQTTClientAdapter
-from stereotypes.ftd.adapters.mqtt.MQTTInputAdapter import MQTTInputAdapter
 from stereotypes.ftd.adapters.mqtt.MQTTOutputAdapter import MQTTOutputAdapter
 from stereotypes.ftd.sub_domain.model.FtDStereotypeModule import FtDStereotypeModule 
 
 from stereotypes.ftd.adapters.rabbit_mq.RabbitMqClientAdapter import RabbitMqClientAdapter
-from stereotypes.ftd.adapters.rabbit_mq.RabbitMqInputAdapter import RabbitMqInputAdapter
 from stereotypes.ftd.adapters.rabbit_mq.RabbitMqOutputAdapter import RabbitMqOutputAdapter
 
 
 class Start(StereotypeScript):
     
+    def __init__(self):
+        print("init")
+        pass
     
     def init(self, service: PersonServicePort):
         self.person_service = service

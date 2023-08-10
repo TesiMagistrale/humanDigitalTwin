@@ -1,7 +1,9 @@
+import importlib
 from domain.model.Person import Person
-from domain.model import SensorStatus
+from stereotypes.generic import SensorStatus
 from domain.model.MetaPersonService import MetaPersonService
-from domain.ports.StereotypeScript import StereotypeScript
+from stereotypes.generic.StereotypeScript import StereotypeScript
+from domain.model.util import download_stereotype
 
 
 class PersonService(metaclass = MetaPersonService):
@@ -10,8 +12,19 @@ class PersonService(metaclass = MetaPersonService):
         self.person = person
         self.stereotypes = dict()
         
-    def add_stereotype(self, stereotype_name, stereotype: StereotypeScript):
-        self.stereotypes[stereotype_name] = stereotype
+    async def add_stereotype(self, stereotype_info):
+        if stereotype_info["name"] not in self.stereotypes.keys():
+            start_class: StereotypeScript = await download_stereotype(stereotype_info)
+            start_class.init(service=self)
+            self.stereotypes[stereotype_info["name"]] = start_class
+        else:
+            raise ValueError
+        
+    async def get_stereotype(self, stereotype_name) -> StereotypeScript:
+        if stereotype_name in self.stereotypes.keys():
+            return self.stereotypes[stereotype_name]
+        else:
+            raise ValueError
         
     
     """  async def compute_data(self, stereotype_name, data):

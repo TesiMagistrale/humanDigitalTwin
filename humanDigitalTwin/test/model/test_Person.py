@@ -1,7 +1,7 @@
 import src
 from domain.model.Person import Person
 from domain.model.Gender import Gender
-from domain.model.SensorStatus import SensorStatus
+from stereotypes.generic.SensorStatus import SensorStatus
 
 class TestFitnessToDrive:
     id = "srgnju679m"

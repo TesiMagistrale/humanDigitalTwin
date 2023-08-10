@@ -3,6 +3,7 @@ from domain.model.PersonService import PersonService
 from domain.model.Person import Person
 from domain.model.Gender import Gender
 from domain.model.MetaPersonService import MetaPersonService
+from domain.ports.PersonServiceUseStereotypePort import PersonServiceNewStereotypePort
 
 id = "srgnju679m"
 first_name = "Mario"
@@ -20,13 +21,18 @@ async def main():
                 gender, 
                 address
                 )
-    person_service:MetaPersonService = PersonService(p)
-    
+    person_service: PersonServiceNewStereotypePort = PersonService(p)
     person_service.add_general_data("licence_date", "2015-01-05")
+
+    module_name = "ftd"
+    await person_service.add_stereotype({
+        "name": module_name
+    })
     
+    stereotype = await person_service.get_stereotype(module_name)
     
     # each time that i connect to the vehicle i must do all of this
-    from stereotypes.ftd.Start import Start
+    
     from stereotypes.ftd.sub_domain.model.FtDParameters import FtDParameters
 
     #put in a config file:
@@ -51,7 +57,6 @@ async def main():
         "km": 200
     }
     
-    stereotype = Start()
     stereotype.init(person_service)
     
     event = asyncio.Event()

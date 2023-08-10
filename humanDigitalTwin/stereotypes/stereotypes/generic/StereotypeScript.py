@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from domain.ports.PersonServicePort import PersonServicePort
+from stereotypes.generic.PersonServicePort import PersonServicePort
 
 class StereotypeScript(ABC):
     

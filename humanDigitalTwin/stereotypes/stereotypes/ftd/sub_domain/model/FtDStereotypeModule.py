@@ -7,12 +7,12 @@ from stereotypes.classes.age_sereotype_class import drive_age_weight
 from stereotypes.classes.experience_stereotype_class import drive_experience_and_frequence_weight
 from datetime import datetime
 
-from domain.model import PersonService
+from stereotypes.generic.PersonServicePort import PersonServicePort
 
 
 class FtDStereotypeModule(StereotypePort):
     
-    def __init__(self, person_service:PersonService, ftd_calculator: MessageOutputPort, output_comm: MessageOutputPort):
+    def __init__(self, person_service:PersonServicePort, ftd_calculator: MessageOutputPort, output_comm: MessageOutputPort):
         self.person_service = person_service
         self.ftd_calculator = ftd_calculator
         self.output_comm = output_comm

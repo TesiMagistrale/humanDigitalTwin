@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from domain.model.SensorStatus import SensorStatus
+from stereotypes.generic.SensorStatus import SensorStatus
 
 
 class PersonServicePort(ABC):

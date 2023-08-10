@@ -1,6 +1,6 @@
 from datetime import datetime
 from domain.model.Gender import Gender
-from domain.model.SensorStatus import SensorStatus
+from stereotypes.generic import SensorStatus
 
 class Person:
     """
