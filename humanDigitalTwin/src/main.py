@@ -12,7 +12,7 @@ birthdate = "2000-09-10"
 gender = Gender.MALE
 address = "via rosa, 1"
 
-async def main():
+def main():
     
     p = Person(id,
                 first_name, 
@@ -25,7 +25,7 @@ async def main():
     person_service.add_general_data("licence_date", "2015-01-05")
 
     module_name = "ftd"
-    await person_service.add_stereotype({
+    """ await person_service.add_stereotype({
         "name": module_name
     })
     
@@ -84,8 +84,7 @@ async def main():
         await event.wait()
         
         print(person_service.get_actual_state())
-        print(person_service.get_sensors())
-        
+        print(person_service.get_sensors()) 
     except Exception or KeyboardInterrupt as e:
         print("Received KeyboardInterrupt, setting event...")
         import traceback
@@ -97,7 +96,17 @@ async def main():
         await asyncio.gather(*tasks, return_exceptions=False)
 
         print("Program exiting...")
+        """
+    
+    from adapters.HttpAdapter import HttpAdapter
+    from domain.ports.HTTPPort import HTTPPort
+    
+    http: HTTPPort = HttpAdapter("localhost", 8000, person_service)
+    http.run()
+        
+        
+    
     
     
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()

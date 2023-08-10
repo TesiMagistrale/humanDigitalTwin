@@ -1,3 +1,4 @@
+import asyncio
 import importlib
 from domain.model.Person import Person
 from stereotypes.generic import SensorStatus
@@ -24,6 +25,20 @@ class PersonService(PersonServiceNewStereotypePort, PersonServicePort):
     async def get_stereotype(self, stereotype_name) -> StereotypeScript:
         if stereotype_name in self.stereotypes.keys():
             return self.stereotypes[stereotype_name]
+        else:
+            raise ValueError
+        
+    async def start_stereotype(self, stereotype_name, data):
+        if stereotype_name in self.stereotypes.keys(): 
+            stereotype: StereotypeScript = self.stereotypes[stereotype_name]
+            asyncio.create_task(stereotype.start(data))
+        else:
+            raise ValueError
+        
+    async def stop_stereotype(self, stereotype_name, data):
+        if stereotype_name in self.stereotypes.keys(): 
+            stereotype: StereotypeScript = self.stereotypes[stereotype_name]
+            asyncio.create_task(stereotype.stop(data))
         else:
             raise ValueError
         

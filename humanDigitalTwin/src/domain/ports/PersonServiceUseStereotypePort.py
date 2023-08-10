@@ -12,3 +12,10 @@ class PersonServiceNewStereotypePort(ABC):
     @abstractmethod      
     async def get_stereotype(self, stereotype_name) -> StereotypeScript:
         pass
+    
+    @abstractmethod      
+    async def start_stereotype(self, stereotype_name, data):
+        pass
+    
+    async def stop_stereotype(self, stereotype_name, data):
+        pass
