@@ -5,10 +5,10 @@ from stereotypes.generic import SensorStatus
 from stereotypes.generic.StereotypeScript import StereotypeScript
 from stereotypes.generic.PersonServicePort import PersonServicePort
 from domain.model.util import download_stereotype
-from domain.ports.PersonServiceUseStereotypePort import PersonServiceNewStereotypePort
+from domain.ports.PersonServiceGeneralPort import PersonServiceGeneralPort
 
 
-class PersonService(PersonServiceNewStereotypePort, PersonServicePort):
+class PersonService(PersonServiceGeneralPort, PersonServicePort):
     
     def __init__(self, person: Person):
         self.person = person

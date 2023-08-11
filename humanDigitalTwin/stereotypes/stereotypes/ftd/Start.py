@@ -100,8 +100,9 @@ class Start(StereotypeScript):
                 asyncio.create_task(self.base_rabbit_client1.start()),
                 asyncio.create_task(self.base_rabbit_client2.start())
             ]
-        except Exception as e:
-            print(e)
+        except Exception:
+            import traceback
+            traceback.print_exc()
     
     async def stop(self, data): 
         for task in self.tasks:

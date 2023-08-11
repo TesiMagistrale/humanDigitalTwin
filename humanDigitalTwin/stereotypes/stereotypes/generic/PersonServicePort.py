@@ -9,11 +9,11 @@ class PersonServicePort(ABC):
         pass
     
     @abstractmethod 
-    def update_general_data(self, key, value):
+    def update_general_data(self, key, value) -> None:
         pass
     
     @abstractmethod    
-    def add_general_data(self, key, value):
+    def add_general_data(self, key, value) -> None:
         pass
     
     @abstractmethod 
@@ -29,15 +29,15 @@ class PersonServicePort(ABC):
         pass
     
     @abstractmethod 
-    def add_sensor(self, sensor_name, status: SensorStatus):
+    def add_sensor(self, sensor_name, status: SensorStatus) -> None:
         pass
     
     @abstractmethod 
-    def update_sensor_status(self, sensor_name, status: SensorStatus):
+    def update_sensor_status(self, sensor_name, status: SensorStatus) -> None:
         pass
     
     @abstractmethod     
-    def remove_sensor(self, sensor_name):
+    def remove_sensor(self, sensor_name) -> None:
         pass
     
     @abstractmethod     
@@ -45,13 +45,13 @@ class PersonServicePort(ABC):
         pass
     
     @abstractmethod     
-    def add_actual_state(self, object, value):
+    def add_actual_state(self, object, value) -> None:
         pass
     
     @abstractmethod     
-    def update_actual_state(self, object, value):
+    def update_actual_state(self, object, value) -> None:
         pass
     
     @abstractmethod     
-    def remove_state(self, object):
+    def remove_state(self, object) -> None:
         pass

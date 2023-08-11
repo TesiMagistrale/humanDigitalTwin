@@ -6,7 +6,9 @@ from fastapi import FastAPI, APIRouter, HTTPException, Depends
 from fastapi.encoders import jsonable_encoder
 
 from domain.ports.HTTPPort import HTTPPort
-from domain.model.PersonService import PersonService
+from domain.ports.PersonServiceGeneralPort import PersonServiceGeneralPort
+import traceback
+
 
 from pydantic import BaseModel
 
@@ -16,7 +18,7 @@ class Stereotype(BaseModel):
 
 class HttpAdapter(HTTPPort):
     
-    def __init__(self, host, port, service: Type[PersonService]):
+    def __init__(self, host, port, service: PersonServiceGeneralPort):
         self.host = host
         self.port = port
         self.service = service
@@ -36,6 +38,40 @@ class HttpAdapter(HTTPPort):
        
         router = APIRouter()
         
+        self._user_routes(router=router)
+        self._stereotypes_routes(router=router)
+
+        return router
+
+    def _user_routes(self, router: APIRouter):
+        @router.get('/user/general_data', status_code=200)  
+        async def general_data():
+            try: 
+                return jsonable_encoder(self.service.get_general_data())
+            
+            except Exception as exception:
+                traceback.print_exc()
+                raise HTTPException(status_code=500, detail=str(exception))
+            
+        @router.get('/user/sensors', status_code=200)  
+        async def sensors():
+            try: 
+                return jsonable_encoder(self.service.get_sensors())
+            
+            except Exception as exception:
+                traceback.print_exc()
+                raise HTTPException(status_code=500, detail=str(exception))
+            
+        @router.get('/user/state', status_code=200)  
+        async def stat():
+            try: 
+                return jsonable_encoder(self.service.get_actual_state())
+            
+            except Exception as exception:
+                traceback.print_exc()
+                raise HTTPException(status_code=500, detail=str(exception))
+            
+    def _stereotypes_routes(self, router: APIRouter):
         @router.post('/stereotype/add', status_code=201)
         async def add_stereotype(stereotype_info: Stereotype):
             try:
@@ -43,6 +79,7 @@ class HttpAdapter(HTTPPort):
                 return jsonable_encoder({})
         
             except Exception as exception:
+                traceback.print_exc()
                 if isinstance(exception, ValueError):
                     raise HTTPException(status_code=400, detail="wrong or missing parameters")
                 else:
@@ -56,6 +93,8 @@ class HttpAdapter(HTTPPort):
                 return jsonable_encoder({})
             
             except Exception as exception:
+                import traceback
+                traceback.print_exc()
                 if isinstance(exception, ValueError):
                     raise HTTPException(status_code=400, detail="wrong or missing parameters")
                 else:
@@ -68,11 +107,9 @@ class HttpAdapter(HTTPPort):
                 return jsonable_encoder({})
             
             except Exception as exception:
+                
+                traceback.print_exc()
                 if isinstance(exception, ValueError):
                     raise HTTPException(status_code=400, detail="wrong or missing parameters")
                 else:
                     raise HTTPException(status_code=500, detail=str(exception))
-                
-        return router
-
-

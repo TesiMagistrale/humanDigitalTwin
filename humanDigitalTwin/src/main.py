@@ -3,7 +3,7 @@ from typing import Type
 from domain.model.PersonService import PersonService 
 from domain.model.Person import Person
 from domain.model.Gender import Gender
-from domain.ports.PersonServiceUseStereotypePort import PersonServiceNewStereotypePort
+from domain.ports.PersonServiceGeneralPort import PersonServiceGeneralPort
 
 id = "srgnju679m"
 first_name = "Mario"
@@ -21,7 +21,7 @@ def main():
                 gender, 
                 address
                 )
-    person_service: Type[PersonService] = PersonService(p)
+    person_service: PersonServiceGeneralPort = PersonService(p)
     person_service.add_general_data("licence_date", "2015-01-05")
 
     module_name = "ftd"

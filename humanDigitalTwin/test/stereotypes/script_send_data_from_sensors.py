@@ -70,7 +70,7 @@ for i in range(5):
 
     channel.basic_publish(exchange=exchange_name, routing_key='AITEK_EVENTS', body=DV_topic)
 
-    time.sleep(1)
+    time.sleep(5)
     print(f"cicle {i}")
     
 connection.close()
