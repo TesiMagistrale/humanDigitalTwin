@@ -15,6 +15,10 @@ from pydantic import BaseModel
 class Stereotype(BaseModel):
     name: str
     data: Optional[Dict[str, Any]]
+    
+class UserData(BaseModel):
+    data_name: str
+    data_value: Any
 
 class HttpAdapter(HTTPPort):
     
@@ -53,6 +57,33 @@ class HttpAdapter(HTTPPort):
                 traceback.print_exc()
                 raise HTTPException(status_code=500, detail=str(exception))
             
+        @router.post('/user/general_data', status_code=201)  
+        async def add_general_data(data: UserData):
+            try: 
+                self.service.add_general_data(data.data_name, data.data_value)
+                return jsonable_encoder({})
+            
+            except Exception as exception:
+                traceback.print_exc()
+                if isinstance(exception, ValueError):
+                    raise HTTPException(status_code=400, detail="wrong or missing parameters")
+                else:
+                    raise HTTPException(status_code=500, detail=str(exception))
+        
+        @router.put('/user/general_data', status_code=204)  
+        async def update_general_data(data: UserData):
+            try: 
+                self.service.update_general_data(data.data_name, data.data_value)
+                return 
+            
+            except Exception as exception:
+                traceback.print_exc()
+                if isinstance(exception, ValueError):
+                    raise HTTPException(status_code=400, detail="wrong or missing parameters")
+                else:
+                    raise HTTPException(status_code=500, detail=str(exception))
+        
+            
         @router.get('/user/sensors', status_code=200)  
         async def sensors():
             try: 
@@ -63,7 +94,7 @@ class HttpAdapter(HTTPPort):
                 raise HTTPException(status_code=500, detail=str(exception))
             
         @router.get('/user/state', status_code=200)  
-        async def stat():
+        async def state():
             try: 
                 return jsonable_encoder(self.service.get_actual_state())
             
@@ -86,11 +117,11 @@ class HttpAdapter(HTTPPort):
                     raise HTTPException(status_code=500, detail=str(exception))
    
         
-        @router.post('/stereotype/start', status_code=200)  
+        @router.post('/stereotype/start', status_code=204)  
         async def start_stereotype(stereotype_info: Stereotype):
             try:
                 await self.service.start_stereotype(stereotype_info.name, stereotype_info.data)
-                return jsonable_encoder({})
+                return 
             
             except Exception as exception:
                 import traceback
@@ -100,11 +131,11 @@ class HttpAdapter(HTTPPort):
                 else:
                     raise HTTPException(status_code=500, detail=str(exception))
                 
-        @router.post('/stereotype/stop', status_code=200)  
+        @router.post('/stereotype/stop', status_code=204)  
         async def stop_stereotype(stereotype_info: Stereotype):
             try:
                 await self.service.stop_stereotype(stereotype_info.name, stereotype_info.data)
-                return jsonable_encoder({})
+                return 
             
             except Exception as exception:
                 

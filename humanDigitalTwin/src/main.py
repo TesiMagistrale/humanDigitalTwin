@@ -22,10 +22,11 @@ def main():
                 address
                 )
     person_service: PersonServiceGeneralPort = PersonService(p)
+    """
     person_service.add_general_data("licence_date", "2015-01-05")
 
     module_name = "ftd"
-    """ await person_service.add_stereotype({
+    await person_service.add_stereotype({
         "name": module_name
     })
     
