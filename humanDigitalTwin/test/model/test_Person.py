@@ -25,7 +25,7 @@ class TestFitnessToDrive:
             "first_name": self.first_name,
             "last_name": self.last_name,
             "birthdate": self.birthdate,
-            "gender": self.gender,
+            "gender": self.gender.value,
             "address": self.address
         }
         
@@ -92,6 +92,30 @@ class TestFitnessToDrive:
         p.remove_sensor("X")
         expected.pop("X")
         assert p.get_sensors() == expected
+        
+    def test_person_characteristics(self):
+        p = Person(self.id,
+            self.first_name, 
+            self.last_name, 
+            self.birthdate, 
+            self.gender, 
+            self.address
+            )
+        
+        expected = dict()
+        
+        assert p.get_characteristics() == expected
+        
+        p.add_characteristics("X", "x value")
+        p.add_characteristics("Y", "y value")
+        expected["X"] = "x value"
+        expected["Y"] = "y value"
+        assert p.get_characteristics() == expected
+        
+        p.update_characteristics("X", "updated x value")
+        expected["X"] = "updated x value"
+        assert p.get_characteristics() == expected
+        
         
         
         

@@ -48,3 +48,7 @@ class PersonServiceGeneralPort(ABC):
     @abstractmethod     
     def get_actual_state(self):
         pass
+    
+    @abstractmethod      
+    def get_characteristics(self):
+        pass

@@ -1,6 +1,9 @@
 import asyncio
 import importlib
+from datetime import datetime
+import json
 from domain.model.Person import Person
+from domain.ports.DbPort import DbPort
 from stereotypes.generic import SensorStatus
 from stereotypes.generic.StereotypeScript import StereotypeScript
 from stereotypes.generic.PersonServicePort import PersonServicePort
@@ -10,9 +13,16 @@ from domain.ports.PersonServiceGeneralPort import PersonServiceGeneralPort
 
 class PersonService(PersonServiceGeneralPort, PersonServicePort):
     
-    def __init__(self, person: Person):
+    GENERAL_DATA = "general_data"
+    CHARACTERISTICS = "characteristics"
+    
+    def __init__(self, person: Person, db: DbPort):
         self.person = person
+        self.db = db
         self.stereotypes = dict()
+        
+        self.db.insert(self.person.get_person_id(), self.GENERAL_DATA, self.get_general_data())
+        self.db.insert(self.person.get_person_id(), self.CHARACTERISTICS, self.get_characteristics())
         
     async def add_stereotype(self, stereotype_info):
         if stereotype_info["name"] not in self.stereotypes.keys():
@@ -42,15 +52,6 @@ class PersonService(PersonServiceGeneralPort, PersonServicePort):
         else:
             raise ValueError
         
-    
-    """  async def compute_data(self, stereotype_name, data):
-        if stereotype_name in self.stereotypes:
-            s = self.stereotypes[stereotype_name]
-            return await s.compute_data(data)
-        else:
-            raise ValueError("Wrong stereotype name") """
-        
-        
     def get_general_data(self):
         """
         Retrieve the general data associated with the person.
@@ -71,6 +72,12 @@ class PersonService(PersonServiceGeneralPort, PersonServicePort):
         Raises:
             ValueError: If the specified key is not present in the general data.
         """
+        self.db.update_general_data(
+            self.person.get_person_id,
+            self.GENERAL_DATA,
+            key,
+            value
+            )
         self.person.update_general_data(key, value)
         
     def add_general_data(self, key, value):
@@ -81,7 +88,16 @@ class PersonService(PersonServiceGeneralPort, PersonServicePort):
             key (str): The key to add.
             value: The value to assign to the key.
         """
-        self.person.add_general_data(key, value)
+        if key not in self.person.get_characteristics().keys():
+            self.db.new_person_info(
+                self.person.get_person_id(), 
+                self.GENERAL_DATA,
+                key,
+                value
+                )
+            self.person.add_general_data(key, value)
+        else:
+            raise ValueError("key yet present")
 
     def get_full_name(self):
         """
@@ -189,5 +205,91 @@ class PersonService(PersonServiceGeneralPort, PersonServicePort):
         """
         self.person.remove_state(object)
         
+    def get_characteristics(self):
+        """
+        Retrieve the characteristics associated with the person.
+
+        Returns:
+            dict: A dictionary containing the characteristics.
+        """
+        return self.person.get_characteristics()
+    
+    def update_characteristics(self, key, value):
+        """
+        Update a specific key-value pair in the characteristics.
+
+        Args:
+            key (str): The key to update.
+            value: The new value to assign to the key.
+
+        Raises:
+            ValueError: If the specified key is not present in the characteristics.
+        """
+        self.person.update_characteristics(key, value)
+        
+    def add_characteristics(self, key):
+        """
+        Add a new key-value pair to the characteristics.
+
+        Args:
+            key (str): The key to add.
+            value: The value to assign to the key.
+        """
+        if key not in self.person.get_characteristics().keys():
+            self.db.new_person_info(
+                self.person.get_person_id(), 
+                self.CHARACTERISTICS,
+                key,
+                {}
+                )
+            self.person.add_characteristics(key, {})
+        
+    def save_data_characteristic(self, key, value):
+        """
+        Add a new key-value pair to the characteristics db.
+
+        Args:
+            key (str): The key to add.
+            value: The value to assign to the key.
+        """
+        self.db.new_chatacteristic_value(
+            self.person.get_person_id(), 
+            self.CHARACTERISTICS,
+            key,
+            {
+                "date":  int(datetime.now().timestamp() * 1000),
+                "value": value
+            }
+        )
+        
+    def get_characteristic_range_values(self, characteristic, start, end):
+        """
+        Get all the characteristic values in a range.
+
+        Args:
+            characteristic (str): The characteristic to get.
+            start (str): the start data ranget in a forma YYYY-MM-DD.
+            end (str): the end data range in a format YYYY-MM-DD.
+        """
+        return self.db.get_characteristic_range_values(
+            self.person.get_person_id(), 
+            self.CHARACTERISTICS,
+            characteristic,
+            int(datetime.strptime(start, '%Y-%m-%d').timestamp()*1000),
+            int(datetime.strptime(end, '%Y-%m-%d').timestamp()*1000),
+        )
+        
+    def get_all_chatacteristic_values(self, characteristic):
+        """
+        Get all the characteristic values.
+
+        Args:
+            characteristic (str): The characteristic to get.
+        """
+        return self.db.get_all_chatacteristic_values(
+            self.person.get_person_id(), 
+            self.CHARACTERISTICS,
+            characteristic,
+        )
     
     

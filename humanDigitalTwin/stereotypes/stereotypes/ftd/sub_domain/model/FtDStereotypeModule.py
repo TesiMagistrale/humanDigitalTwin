@@ -1,4 +1,5 @@
 
+from typing import Dict
 import numpy as np
 from stereotypes.generic.SensorStatus import SensorStatus
 from stereotypes.ftd.sub_domain.ports.MessageOutputPort import MessageOutputPort
@@ -6,12 +7,14 @@ from stereotypes.ftd.sub_domain.ports.StereotypePort import StereotypePort
 from stereotypes.ftd.sub_domain.model.FtDParameters import FtDParameters
 from stereotypes.classes.age_sereotype_class import drive_age_weight
 from stereotypes.classes.experience_stereotype_class import drive_experience_and_frequence_weight
-from datetime import datetime
+from datetime import datetime, date, timedelta
 
 from stereotypes.generic.PersonServicePort import PersonServicePort
 
 
 class FtDStereotypeModule(StereotypePort):
+    
+    YEARLY_KM = "yearly_km"
     
     def __init__(self, person_service:PersonServicePort, ftd_calculator: MessageOutputPort, output_comm: MessageOutputPort, sensors):
         self.person_service = person_service
@@ -20,7 +23,7 @@ class FtDStereotypeModule(StereotypePort):
         
         #initialize module variables
         self.start_drive_km = 0
-        FtDParameters.E.full_namend_drive_km = 0
+        self.end_drive_km = 0
         self.yearly_km = 0
         
         self.sensors = sensors
@@ -29,11 +32,6 @@ class FtDStereotypeModule(StereotypePort):
     
     
     async def compute_data(self, data):
-        '''
-        TODO: devo gestire i buffer e al momento del calcolo inviare un messaggio al servizio FTD, ottenuto il dato lo ritorno al servizio che lo ritorna all'adapter mqtt e che lo invierà poi alla macchina
-        per i km annui salva ogni giorno sul db (ad ogni guida aggiorni il valore del giorno se presente, altrimenti lo crei nuovo con il dato), al momento dell'avvio della guida reperisci il dato aggregato dal db e assegnalo alla variabile yearly_km il dato si riferisce ai km annui rilevati al giorno precedente.
-        '''
-        
         #update local variables
         sensor_type = data["type"]
         match sensor_type:
@@ -94,15 +92,33 @@ class FtDStereotypeModule(StereotypePort):
     def start(self, data):
         self.start_drive_km = data["km"]
         self.end_drive_km = 0
-        #self.yearly_km = retrive from db from today date and today date - 1 year TODO
-        self.yearly_km = 5000
+        today = date.today()
+        km_dict = self.person_service.get_characteristics()[self.YEARLY_KM]
+        if "value" in km_dict and km_dict["date"] == str(today - timedelta(days=1)):
+            self.yearly_km = km_dict["value"]
+        else:
+            km_dict = self.person_service.get_characteristic_range_values(
+                self.YEARLY_KM,
+                str(today - timedelta(days=365)),
+                str(today)
+            )
+            self.yearly_km = sum(km_dict.values())
+            self.person_service.update_characteristics(self.YEARLY_KM, {
+                "date": str(today - timedelta(days=1)),
+                "value": self.yearly_km
+            })
+            
         self._add_module_state()
         self._reset_variables()
         self._set_sensors_state(SensorStatus.ON)
         
     def stop(self, data):
         self.end_drive_km = data["km"]
-        #TODO save driven km self.service.save(data) ?? da elaborare 
+        self.person_service.save_data_characteristic(
+            self.YEARLY_KM,
+            self.end_drive_km - self.start_drive_km 
+        )
+        
         self._remove_module_state()
         self._set_sensors_state(SensorStatus.OFF)
     

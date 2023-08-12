@@ -29,7 +29,7 @@ class Person:
             "first_name": first_name,
             "last_name": last_name,
             "birthdate": birthdate,
-            "gender": gender,
+            "gender": gender.value,
             "address": address
         }
         self.first_name = first_name
@@ -40,6 +40,10 @@ class Person:
         
         self.actual_state = dict() #object:value
         self.sensors = dict() #sensor: on/off
+        self.characteristics = dict() #sensor: on/off
+        
+    def get_person_id(self):
+        return self.general_data["id"]
 
     def get_general_data(self):
         """
@@ -197,3 +201,38 @@ class Person:
             self.actual_state.pop(object)
         else:
             raise ValueError("Object not found.")
+        
+    def get_characteristics(self):
+        """
+        Retrieve the general data associated with the person.
+
+        Returns:
+            dict: A dictionary containing the characteristics.
+        """
+        return self.characteristics
+    
+    def update_characteristics(self, key, value):
+        """
+        Update a specific key-value pair in the characteristics.
+
+        Args:
+            key (str): The key to update.
+            value: The new value to assign to the key.
+
+        Raises:
+            ValueError: If the specified key is not present in the general data.
+        """
+        if key in self.characteristics:
+            self.characteristics[key] = value
+        else:
+            raise ValueError("Key not found in general data.")
+        
+    def add_characteristics(self, key, value):
+        """
+        Add a new key-value pair to the characteristics.
+
+        Args:
+            key (str): The key to add.
+            value: The value to assign to the key.
+        """
+        self.characteristics[key] = value

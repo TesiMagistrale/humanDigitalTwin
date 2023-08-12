@@ -82,6 +82,41 @@ class HttpAdapter(HTTPPort):
                     raise HTTPException(status_code=400, detail="wrong or missing parameters")
                 else:
                     raise HTTPException(status_code=500, detail=str(exception))
+                
+        @router.get('/user/characteristics', status_code=200)  
+        async def characteristics():
+            try: 
+                return jsonable_encoder(self.service.get_characteristics())
+            
+            except Exception as exception:
+                traceback.print_exc()
+                raise HTTPException(status_code=500, detail=str(exception))
+            
+        @router.post('/user/characteristics', status_code=201)  
+        async def add_characteristics(data: UserData):
+            try: 
+                self.service.add_characteristics(data.data_name, data.data_value)
+                return jsonable_encoder({})
+            
+            except Exception as exception:
+                traceback.print_exc()
+                if isinstance(exception, ValueError):
+                    raise HTTPException(status_code=400, detail="wrong or missing parameters")
+                else:
+                    raise HTTPException(status_code=500, detail=str(exception))
+        
+        @router.put('/user/characteristics', status_code=204)  
+        async def update_characteristics(data: UserData):
+            try: 
+                self.service.update_characteristics(data.data_name, data.data_value)
+                return 
+            
+            except Exception as exception:
+                traceback.print_exc()
+                if isinstance(exception, ValueError):
+                    raise HTTPException(status_code=400, detail="wrong or missing parameters")
+                else:
+                    raise HTTPException(status_code=500, detail=str(exception))
         
             
         @router.get('/user/sensors', status_code=200)  

@@ -24,17 +24,19 @@ class Start(StereotypeScript):
             "car_speedometer",
             "arousal_sensor"
         ]
-        pass
-    
+        try:
+            import os, json
+            with open((os.path.dirname(os.path.abspath(__file__)) + "/config.json").replace ('\\', '/'),'r') as json_file:
+                file = json.load(json_file)
+                
+                self.mqtt_config = file
+        except Exception as exception:
+            print(exception)
+            
     def init(self, service: PersonServicePort):
         self.person_service = service
         #read from file (?)
-        self.mqtt_config = {
-            "broker_name": "broker.hivemq.com",
-            "input_topic": ["newFtD"],
-            "output_topic": "ftdMS",
-            "port": 1883
-            }
+        
         self.base_mqtt_client: CommunicationStereotype = MQTTClientAdapter()
         self.mqtt_output: MessageOutputPort = MQTTOutputAdapter(
             self.base_mqtt_client, 
@@ -45,6 +47,8 @@ class Start(StereotypeScript):
         for sensor in self.sensors:
             if sensor not in self.person_service.get_sensors().keys():
                 self.person_service.add_sensor(sensor_name=sensor, status=SensorStatus.OFF)
+        
+        self.person_service.add_characteristics("yearly_km")
 
     
     

@@ -55,3 +55,27 @@ class PersonServicePort(ABC):
     @abstractmethod     
     def remove_state(self, object) -> None:
         pass
+    
+    @abstractmethod      
+    def get_characteristics(self):
+        pass
+    
+    @abstractmethod 
+    def update_characteristics(self, key, value):
+        pass
+    
+    @abstractmethod    
+    def add_characteristics(self, key):
+        pass
+    
+    @abstractmethod
+    def save_data_characteristic(self, key, value):
+        pass
+    
+    @abstractmethod
+    def get_characteristic_range_values(self, characteristic, start, end):
+        pass
+    
+    @abstractmethod
+    def get_all_chatacteristic_values(self, characteristic):
+        pass
