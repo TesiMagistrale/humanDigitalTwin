@@ -1,8 +1,14 @@
 {
-    "broker_name": "broker.hivemq.com",
-    "input_topic": [
-        "newFtD"
-    ],
-    "output_topic": "ftdMS",
-    "port": 1883
+    "mqtt": {
+        "broker_name": "broker.hivemq.com",
+        "input_topic": [
+            "newFtD"
+        ],
+        "output_topic": "ftdMS",
+        "port": 1883
+    },
+    "http": {
+        "host": "localhost",
+        "port": 5000
+    }
 }

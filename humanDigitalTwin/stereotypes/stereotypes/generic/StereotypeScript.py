@@ -15,3 +15,11 @@ class StereotypeScript(ABC):
     @abstractmethod
     async def stop(self, data): 
         pass
+    
+    @abstractmethod
+    def get_stereotype_data(self):
+        pass
+    
+    @abstractmethod
+    def get_stereotype_data_range(self, data_type, start, end):
+        pass

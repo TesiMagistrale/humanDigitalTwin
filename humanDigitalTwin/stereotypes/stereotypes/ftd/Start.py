@@ -9,6 +9,7 @@ from stereotypes.ftd.sub_domain.ports.StereotypePort import StereotypePort
 from stereotypes.ftd.adapters.mqtt.MQTTClientAdapter import MQTTClientAdapter
 from stereotypes.ftd.adapters.mqtt.MQTTOutputAdapter import MQTTOutputAdapter
 from stereotypes.ftd.sub_domain.model.FtDStereotypeModule import FtDStereotypeModule 
+from stereotypes.ftd.sub_domain.model.FtDParameters import FtDParameters 
 
 from stereotypes.ftd.adapters.rabbit_mq.RabbitMqClientAdapter import RabbitMqClientAdapter
 from stereotypes.ftd.adapters.rabbit_mq.RabbitMqOutputAdapter import RabbitMqOutputAdapter
@@ -29,13 +30,13 @@ class Start(StereotypeScript):
             with open((os.path.dirname(os.path.abspath(__file__)) + "/config.json").replace ('\\', '/'),'r') as json_file:
                 file = json.load(json_file)
                 
-                self.mqtt_config = file
+                self.mqtt_config = file["mqtt"]
+                self.ms_http_config = file["http"]
         except Exception as exception:
             print(exception)
             
     def init(self, service: PersonServicePort):
         self.person_service = service
-        #read from file (?)
         
         self.base_mqtt_client: CommunicationStereotype = MQTTClientAdapter()
         self.mqtt_output: MessageOutputPort = MQTTOutputAdapter(
@@ -117,3 +118,50 @@ class Start(StereotypeScript):
         await self.base_rabbit_client2.stop()
         module_data = data["module"] 
         self.base_rabbit_client2.stop_service(module_data)
+        
+    def get_stereotype_data(self, data_type):
+        allowed_data_types = [
+            FtDParameters.CD.value, 
+            FtDParameters.VD.value,
+            FtDParameters.E.value + FtDParameters.A.value,
+            "ftd"
+        ]
+        
+        if data_type in allowed_data_types:
+            import requests
+            url  = "http://" + self.ms_http_config["host"] + ":" + str(self.ms_http_config["port"]) + "/all"
+            resp = requests.get(url, {
+                "id": self.person_service.get_general_data()["id"],
+                "data_type": data_type
+            })
+            if resp.status_code == 200:
+                return resp.json()
+            else:
+                return resp.raise_for_status()
+        else:
+            raise ValueError("wrong data_type")
+        
+    def get_stereotype_data_range(self, data_type, start, end):
+        allowed_data_types = [
+            FtDParameters.CD.value, 
+            FtDParameters.VD.value,
+            FtDParameters.E.value + FtDParameters.A.value,
+            "ftd"
+        ]
+        
+        if data_type in allowed_data_types:
+            import requests
+            from datetime import datetime
+            url  = "http://" + self.ms_http_config["host"] + ":" + str(self.ms_http_config["port"]) + "/range"
+            resp = requests.get(url, {
+                "id": self.person_service.get_general_data()["id"],
+                "data_type": data_type,
+                "start": int(datetime.strptime(start, '%Y-%m-%d').timestamp()*1000),
+                "end": int(datetime.strptime(end, '%Y-%m-%d').timestamp()*1000),
+            })
+            if resp.status_code == 200:
+                return resp.json()
+            else:
+                return resp.raise_for_status()
+        else:
+            raise ValueError("wrong data_type")

@@ -52,3 +52,11 @@ class PersonServiceGeneralPort(ABC):
     @abstractmethod      
     def get_characteristics(self):
         pass
+    
+    @abstractmethod
+    def get_stereotype_data(self, stereotype_name, data_type):
+        pass
+    
+    @abstractmethod
+    def get_stereotype_data_range(self, stereotype_name, data_type, start, end):
+        pass

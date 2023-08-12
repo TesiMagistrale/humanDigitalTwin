@@ -52,6 +52,20 @@ class PersonService(PersonServiceGeneralPort, PersonServicePort):
         else:
             raise ValueError
         
+    def get_stereotype_data(self, stereotype_name, data_type):
+        if stereotype_name in self.stereotypes.keys(): 
+            stereotype: StereotypeScript = self.stereotypes[stereotype_name]
+            return stereotype.get_stereotype_data(data_type)
+        else:
+            raise ValueError
+        
+    def get_stereotype_data_range(self, stereotype_name, data_type, start, end):
+        if stereotype_name in self.stereotypes.keys(): 
+            stereotype: StereotypeScript = self.stereotypes[stereotype_name]
+            return stereotype.get_stereotype_data_range(data_type, start, end)
+        else:
+            raise ValueError
+        
     def get_general_data(self):
         """
         Retrieve the general data associated with the person.

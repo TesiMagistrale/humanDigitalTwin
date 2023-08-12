@@ -19,6 +19,11 @@ class Stereotype(BaseModel):
 class UserData(BaseModel):
     data_name: str
     data_value: Any
+    
+class StereotypeData(BaseModel):
+    data_type: str
+    start: str
+    end: str
 
 class HttpAdapter(HTTPPort):
     
@@ -174,6 +179,28 @@ class HttpAdapter(HTTPPort):
             
             except Exception as exception:
                 
+                traceback.print_exc()
+                if isinstance(exception, ValueError):
+                    raise HTTPException(status_code=400, detail="wrong or missing parameters")
+                else:
+                    raise HTTPException(status_code=500, detail=str(exception))
+                
+        @router.get('/stereotype/get_data', status_code=200)  
+        async def get_data(name:str, data_type:str):
+            try: 
+                return jsonable_encoder(self.service.get_stereotype_data(name, data_type))
+            except Exception as exception:
+                traceback.print_exc()
+                if isinstance(exception, ValueError):
+                    raise HTTPException(status_code=400, detail="wrong or missing parameters")
+                else:
+                    raise HTTPException(status_code=500, detail=str(exception))
+                
+        @router.get('/stereotype/get_data_range', status_code=200)  
+        async def get_data_range(name:str, data_type:str, start: str, end: str):
+            try: 
+                return jsonable_encoder(self.service.get_stereotype_data_range(name, data_type, start, end))
+            except Exception as exception:
                 traceback.print_exc()
                 if isinstance(exception, ValueError):
                     raise HTTPException(status_code=400, detail="wrong or missing parameters")
