@@ -10,10 +10,10 @@ from domain.ports.DbPort import DbPort
 from adapters.HttpAdapter import HttpAdapter
 from domain.ports.HTTPPort import HTTPPort
 
-id = "srgnju679m"
+id = srgnju679m
 first_name = "Mario"
 last_name = "Rossi"
-birthdate = "2000-09-10"
+birthdate = "1978-09-10"
 gender = Gender.MALE
 address = "via rosa, 1"
 
@@ -47,6 +47,12 @@ def main():
                 )
         person_service: PersonServiceGeneralPort = PersonService(p, mongodb)
         person_service.add_general_data("licence_date", "2016-01-05")
+        """ import datetime
+        person_service.add_characteristics("yearly_km")
+        person_service.update_characteristics("yearly_km", {
+            "date": str(datetime.datetime.today() - datetime.timedelta(days=1)),
+            "value": 4500
+            }) """
         #person_service = PersonService(p, mongodb)
         
         http: HTTPPort = HttpAdapter(http_host, http_port, person_service)
