@@ -111,6 +111,7 @@ class FtDStereotypeModule(StereotypePort):
         self._add_module_state()
         self._reset_variables()
         self._set_sensors_state(SensorStatus.ON)
+        self.compute_ftd_flag = False
         
     def stop(self, data):
         self.end_drive_km = data["km"]
