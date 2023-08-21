@@ -161,4 +161,4 @@ async def main():
             task.cancel()
     
 
-#asyncio.run(main()) #remove comment for executing
+asyncio.run(main())
