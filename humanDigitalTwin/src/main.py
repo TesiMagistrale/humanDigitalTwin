@@ -10,7 +10,7 @@ from domain.ports.DbPort import DbPort
 from adapters.HttpAdapter import HttpAdapter
 from domain.ports.HTTPPort import HTTPPort
 
-id = srgnju679m
+id = "srgnju679m"
 first_name = "Mario"
 last_name = "Rossi"
 birthdate = "1978-09-10"

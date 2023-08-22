@@ -43,8 +43,8 @@ def vd_function(t):
 time_points = np.linspace(0, 2, num=240) #quattro campionamenti di velocità al secondo
 speed_values = [speed_function(t) for t in time_points]
 
-#cd_val = [cd_function(t) for t in time_points]
-#vd_val = [vd_function(t) for t in time_points]
+cd_val = [cd_function(t) for t in time_points[0::4]]
+vd_val = [vd_function(t) for t in time_points[0::4]]
 
 
 cd_val = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] 
