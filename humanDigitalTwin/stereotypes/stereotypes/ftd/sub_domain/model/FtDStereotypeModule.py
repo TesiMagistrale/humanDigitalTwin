@@ -29,6 +29,7 @@ class FtDStereotypeModule(StereotypePort):
         self.sensors = sensors
         
         self._reset_variables()
+        self.timestamp_relab = 0
     
     
     async def compute_data(self, data):
@@ -75,7 +76,8 @@ class FtDStereotypeModule(StereotypePort):
                 data[FtDParameters.SPEED.full_name]= 100
                 '''
                 self.speed_buffer.pop(0)
-                self.speed_buffer.append(float(data[FtDParameters.SPEED.full_name]))
+                self.speed_buffer.append(float(data[FtDParameters.SPEED.full_name]["speed"]))
+                self.timestamp_relab = data[FtDParameters.SPEED.full_name]["timestamp"]
             case _:
                 raise ValueError("wrong sensor type")
             
@@ -86,6 +88,7 @@ class FtDStereotypeModule(StereotypePort):
     
     async def new_elaborated_data(self, data):
         self.person_service.update_actual_state("ftd", data["ftd"])
+        data["timestamp_relab"] = self.timestamp_relab
         await self.output_comm.send(data)
         
 
@@ -175,7 +178,7 @@ class FtDStereotypeModule(StereotypePort):
                 "speed": speed_mean
                 },
             FtDParameters.VD.value: {
-                "sensor_value": int(self.visual_distraction["sensor_value"]),
+                "sensor_value": 1 if self.visual_distraction["sensor_value"] else 0, #int(self.visual_distraction["sensor_value"]),
                 "timestamp": self.visual_distraction["timestamp"],
                 "speed": speed_mean
                 },

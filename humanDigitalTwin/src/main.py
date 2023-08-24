@@ -46,7 +46,7 @@ def main():
                 address
                 )
         person_service: PersonServiceGeneralPort = PersonService(p, mongodb)
-        person_service.add_general_data("licence_date", "2016-01-05")
+        person_service.add_general_data("licence_date", "2020-01-05")
         """ import datetime
         person_service.add_characteristics("yearly_km")
         person_service.update_characteristics("yearly_km", {

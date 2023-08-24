@@ -90,7 +90,7 @@ async def publish_messages():
     
     # Publish loop    
     import os
-    file_name = "simu_log.log"
+    file_name = "simu_log_elab.log"
     with open((os.path.dirname(os.path.abspath(__file__)) + "/"+ file_name).replace ('\\', '/'),'r') as file:
         for line in file:
             row = json.loads(line)
@@ -106,9 +106,9 @@ async def publish_messages():
 
 async def main():
     global group, logger_output, logger_topic
-    logger_output, handler_output = setup_logger('output_logger', 'person0_result_new.log')
+    logger_output, handler_output = setup_logger('output_logger', 'person0_result2_new.log')
     handler_output.setFormatter(json_formatter)
-    logger_topic, handler_topic = setup_logger('topic_logger', 'simu_log2.log')
+    logger_topic, handler_topic = setup_logger('topic_logger', 'simu_log3.log')
     handler_topic.setFormatter(json_formatter)
     
     tasks = [

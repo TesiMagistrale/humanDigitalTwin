@@ -45,15 +45,18 @@ class RabbitMqInputAdapter(MessageInputPort):
                 }
                 case FtDParameters.VD.topic:
                     sensor_value[FtDParameters.VD.full_name]= {
-                    "sensor_value": msg[FtDParameters.VD.full_name],
+                    "sensor_value": msg["start"], #msg[FtDParameters.VD.full_name],
                     "timestamp": msg["timestamp"]
                 }
                 case FtDParameters.E.topic:
-                    sensor_value[FtDParameters.E.full_name] = msg
+                    sensor_value[FtDParameters.E.full_name] = {"neutral": str(1), "happiness": str(1), "surprise": str(1), "sadness": str(1), "anger": str(1), "disgust": str(1), "fear": str(1)}#msg
                 case FtDParameters.A.topic:
-                    sensor_value[FtDParameters.A.full_name] = msg[FtDParameters.A.full_name]
+                    sensor_value[FtDParameters.A.full_name] = {"arousal": 0}#msg[FtDParameters.A.full_name]
                 case FtDParameters.SPEED.topic:
-                    sensor_value[FtDParameters.SPEED.full_name] = msg[FtDParameters.SPEED.full_name]
+                    sensor_value[FtDParameters.SPEED.full_name] = {
+                        "speed": msg['VehicleDynamics']['speed']['x'], #msg[FtDParameters.SPEED.full_name],
+                        "timestamp": msg['VehicleDynamics']['timestamp']
+                    }
                 case _:
                     raise ValueError("wrong topic")
             sensor_value["type"] =  FtDParameters.get_full_name_from_topic(queue)
