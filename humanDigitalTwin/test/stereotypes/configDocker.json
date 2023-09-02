@@ -1,0 +1,19 @@
+{
+    "mqtt": {
+        "broker_name": "broker.hivemq.com",
+        "input_topic": [
+            "newFtD"
+        ],
+        "output_topic": "ftdMS",
+        "port": 1883
+    },
+    "http": {
+        "host": "localhost",
+        "port": 5000
+    },
+    "mongoDB_config": {
+        "database_uri": "mongodb://localhost:27020/",
+        "database_name": "dt"
+    }
+    
+}

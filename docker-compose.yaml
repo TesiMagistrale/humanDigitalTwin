@@ -1,0 +1,33 @@
+version: '3'
+
+services:
+
+  hdt_rabbitmq:
+    image: rabbitmq:management
+    container_name: hdt_rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    ports:
+      - "5675:5672"
+      - "15673:15672"
+
+  hdt_mongo:
+    container_name: hdt_mongo
+    image: mongo:latest
+    restart: always
+    ports:
+      - 27020:27017
+
+  hdt:
+    container_name: hdt
+    ports:
+      - 8000:8000
+    build:
+      context: humanDigitalTwin
+      dockerfile: Dockerfile
+    depends_on:
+      - hdt_mongo
+      - hdt_rabbitmq
+    command: python src/main.py configDocker.json
+    

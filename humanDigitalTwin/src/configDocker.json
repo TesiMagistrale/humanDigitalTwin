@@ -1,0 +1,10 @@
+{
+    "mongoDB_config": {
+        "database_uri": "hdt_mongo",
+        "database_name": "dt"
+    },
+    "http_config": {
+        "host": "hdt",
+        "port": 8000
+    }
+}

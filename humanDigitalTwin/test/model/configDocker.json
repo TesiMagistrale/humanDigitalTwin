@@ -1,0 +1,10 @@
+{
+    "mongoDB_config": {
+        "database_uri": "mongodb://localhost:27020/",
+        "database_name": "dt"
+    },
+    "http_config": {
+        "host": "localhost",
+        "port": 8000
+    }
+}
