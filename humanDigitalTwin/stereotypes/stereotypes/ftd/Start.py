@@ -14,6 +14,8 @@ from stereotypes.ftd.sub_domain.model.FtDParameters import FtDParameters
 from stereotypes.ftd.adapters.rabbit_mq.RabbitMqClientAdapter import RabbitMqClientAdapter
 from stereotypes.ftd.adapters.rabbit_mq.RabbitMqOutputAdapter import RabbitMqOutputAdapter
 
+import psutil
+
 
 class Start(StereotypeScript):
     
@@ -35,6 +37,14 @@ class Start(StereotypeScript):
         except Exception as exception:
             print(exception)
             
+
+    async def monitor_cpu_usage(self, interval=1):
+        while True:
+            cpu_percent = psutil.cpu_percent(interval=interval)
+            #print(f"CPU Usage: {cpu_percent}%")
+            self.CPU.append(cpu_percent)
+            await asyncio.sleep(interval)
+            
     def init(self, service: PersonServicePort):
         self.person_service = service
         
@@ -50,6 +60,8 @@ class Start(StereotypeScript):
                 self.person_service.add_sensor(sensor_name=sensor, status=SensorStatus.OFF)
         
         self.person_service.add_characteristics("yearly_km")
+        cpu_percent = psutil.cpu_percent(interval=1)
+        print(f"CPU init Usage: {cpu_percent}%")
 
     
     
@@ -99,12 +111,14 @@ class Start(StereotypeScript):
             module_data = data["module"] 
             
             self.base_rabbit_client2.start_service(module_data)
-            
+            self.CPU = []
             self.tasks = [
                 asyncio.create_task(self.base_mqtt_client.start()),
                 asyncio.create_task(self.base_rabbit_client1.start()),
-                asyncio.create_task(self.base_rabbit_client2.start())
+                asyncio.create_task(self.base_rabbit_client2.start()),
+                asyncio.create_task(self.monitor_cpu_usage())
             ]
+            
         except Exception:
             import traceback
             traceback.print_exc()
@@ -112,7 +126,7 @@ class Start(StereotypeScript):
     async def stop(self, data): 
         for task in self.tasks:
             task.cancel()
-            
+        print(self.CPU)
         await self.base_mqtt_client.stop()
         await self.base_rabbit_client1.stop()
         await self.base_rabbit_client2.stop()

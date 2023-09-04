@@ -57,8 +57,8 @@ async def publish_messages():
         queue = await channel.declare_queue(name+"1", auto_delete=True)
         await queue.bind(exchange, routing_key=name)
     s = 5  # initial speed
-    w = 0
-    x = 4
+    w = 5
+    x = 1
     # Publish loop  
     start = time.time()
     for i in range(10):
