@@ -10,12 +10,12 @@ from domain.ports.DbPort import DbPort
 from adapters.HttpAdapter import HttpAdapter
 from domain.ports.HTTPPort import HTTPPort
 
-id = "srgnju679m"
+""" id = "srgnju679m"
 first_name = "Mario"
 last_name = "Rossi"
 birthdate = "1978-09-10"
 gender = Gender.MALE
-address = "via rosa, 1"
+address = "via rosa, 1" """
 
 def main():
     try: 
@@ -31,6 +31,13 @@ def main():
                 mongodb_uri = mongo["database_uri"]
                 database_name = mongo["database_name"]
                 
+                person = file['person']
+                id = person["id"]
+                first_name = person["first_name"]
+                last_name = person["last_name"]
+                birthdate = person["birthdate"]
+                gender = Gender.MALE if Gender.MALE.name == person["gender"] else Gender.FEMALE
+                address = person["address"]
                 
                 if http_host is None or http_port is None :
                     raise ValueError("http_host or http_port is none")

@@ -32,7 +32,7 @@ class TestPersonService:
     def init(self):
         try: 
             if self.service == None:
-                config_file = "config.json"
+                config_file = "config.json" #"configDocker.json"
                 with open((os.path.dirname(os.path.abspath(__file__)) + "/" + config_file).replace ('\\', '/'),'r') as json_file:
                         file = json.load(json_file)
                         

@@ -27,7 +27,7 @@ class Start(StereotypeScript):
         ]
         try:
             import os, json
-            with open((os.path.dirname(os.path.abspath(__file__)) + "/config.json").replace ('\\', '/'),'r') as json_file:
+            with open((os.path.dirname(os.path.abspath(__file__)) + "/config.json").replace ('\\', '/'),'r') as json_file: #/configDocker.json
                 file = json.load(json_file)
                 
                 self.mqtt_config = file["mqtt"]

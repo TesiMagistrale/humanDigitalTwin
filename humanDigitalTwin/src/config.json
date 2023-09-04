@@ -6,5 +6,13 @@
     "http_config": {
         "host": "localhost",
         "port": 8000
+    },
+    "person":{
+        "id": "id1",
+        "first_name": "Mario",
+        "last_name": "Rossi",
+        "birthdate": "2000-09-10",
+        "gender": "MALE",
+        "address": "via rosa, 1"
     }
 }
